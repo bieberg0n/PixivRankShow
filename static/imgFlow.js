@@ -50,55 +50,55 @@ const clientWidth = function() {
     return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
 }
 
-function isMobile() {
-    return (/(iPhone|iPad|iPod|iOS|android)/i.test(navigator.userAgent))
+// function isMobile() {
+//     return (/(iPhone|iPad|iPod|iOS|android)/i.test(navigator.userAgent))
+// }
+
+const _pushColumn = function() {
+    var winWidth = 0
+    const someWidth = [200, 420, 640, 860, 1080].map(i => i + 16)
+    const _push = function() {
+        // if (isMobile()) {
+        //     var goodWidths = [200, 420]
+        // } else {
+        //     var goodWidths = someWidth.filter(width => width < clientWidth())
+        // }
+        const cw = clientWidth()
+        var goodWidths = someWidth.filter(width => width <= cw)
+        log(cw, goodWidths)
+        const greatWidth = _.last(goodWidths)
+        if (greatWidth != winWidth) {
+            // log(goodWidths)
+            $("imgFlow").empty()
+            goodWidths.forEach(_ => $("imgFlow").append('<column></column>'))
+            winWidth = greatWidth
+        }
+    }
+    return _push
 }
 
-    const _pushColumn = function() {
-        var winWidth = 0
-        const someWidth = [200, 420, 640, 860, 1080].map(i => i + 16)
-        const _push = function() {
-            // if (isMobile()) {
-            //     var goodWidths = [200, 420]
-            // } else {
-            //     var goodWidths = someWidth.filter(width => width < clientWidth())
-            // }
-            cw = clientWidth()
-            var goodWidths = someWidth.filter(width => width <= cw)
-            log(cw, goodWidths)
-            greatWidth = _.last(goodWidths)
-            if (greatWidth != winWidth) {
-                // log(goodWidths)
-                $("imgFlow").empty()
-                goodWidths.forEach(_ => $("imgFlow").append('<column></column>'))
-                winWidth = greatWidth
-            }
-        }
-        return _push
-    }
+const pushColumn = _pushColumn()
 
-    const pushColumn = _pushColumn()
-
-    const eventBind = function() {
-        // const pushCol = pushColumn()
-        window.onresize = _.throttle(function() {
-            log('resize.')
-            pushColumn()
-            insertImg()
-        }, 100)
-    }
-
-    const main = function() {
+const eventBind = function() {
+    // const pushCol = pushColumn()
+    window.onresize = _.throttle(function() {
+        log('resize.')
         pushColumn()
-        eventBind()
-        $.ajax({
-            url: '/rank',
-            success: function(result) {
-                insertDate(result.date)
-                urls = result.urls
-                insertImg()
-            }
-        })
-    }
+        insertImg()
+    }, 100)
+}
 
-    main()
+const main = function() {
+    pushColumn()
+    eventBind()
+    $.ajax({
+        url: '/rank',
+        success: function(result) {
+            insertDate(result.date)
+            urls = result.urls
+            insertImg()
+        }
+    })
+}
+
+main()
